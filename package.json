@@ -1,0 +1,19 @@
+{
+  "name": "electron-svg-editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "sass:watch": "sass --watch sass/style.sass css/style.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^12.0.1"
+  },
+  "dependencies": {
+    "sass": "^1.32.8"
+  }
+}
