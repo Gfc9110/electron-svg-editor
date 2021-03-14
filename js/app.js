@@ -7,6 +7,7 @@ var app = new Vue({
       drawing: {
         nodes: [],
       },
+      modals: { isOpen: false, createDocument: { isOpen: false } },
     };
   },
   methods: {
@@ -28,6 +29,10 @@ var app = new Vue({
     },
     svgMouseUp(event) {
       actualDrawing = null;
+    },
+    createDocument() {
+      this.modals.isOpen = true;
+      this.modals.createDocument.isOpen = true;
     },
   },
 });

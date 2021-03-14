@@ -11,6 +11,9 @@
   <body>
     <div id="app">
       <div class="window-bar">
+        <div class="bar-button action-button" v-on:click="createDocument">
+          <div class="mt-i">note_add</div>
+        </div>
         <div class="bar-button" v-on:click="minimize">
           <div class="mt-i">minimize</div>
         </div>
@@ -36,6 +39,19 @@
             fill="none"
           ></path>
         </svg>
+      </div>
+      <div id="modalsContainer" v-bind:class="{open: modals.isOpen}">
+        <div
+          class="modal card"
+          id="createDocument"
+          v-bind:class="{open: modals.createDocument.isOpen}"
+        >
+          <header>
+            <div class="title">Nuovo Documento</div>
+            <div class="close-button"><div class="mt-i">close</div></div>
+          </header>
+          <div class="content"></div>
+        </div>
       </div>
     </div>
   </body>
