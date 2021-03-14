@@ -1,17 +1,28 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
 
-function createMainWindow() {
-  const win = new BrowserWindow({
+function createWindow() {
+  let mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    backgroundColor: "#333",
-    webPreferences: { nodeIntegration: true },
+    webPreferences: {
+      preload: path.join(__dirname, "./preload.js"),
+    },
+    frame: false,
   });
 
-  win.loadFile("index.html");
+  mainWindow.loadFile("index.html");
+
+  ipcMain.on("closeApp", () => {
+    app.quit();
+  });
+
+  ipcMain.on("minimizeApp", () => {
+    mainWindow.minimize();
+  });
 }
 
-app.whenReady().then(createMainWindow);
+app.whenReady().then(createWindow);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
