@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 
+require("electron-reload")(__dirname);
+
 function createWindow() {
   let mainWindow = new BrowserWindow({
     width: 800,
