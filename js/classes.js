@@ -14,3 +14,24 @@ class Line {
     this.points.push(new Point(x, y));
   }
 }
+
+class PencilTool {
+  constructor(vue) {
+    this.vue = vue;
+    this.path = null;
+    this.icon = "edit";
+  }
+  mousedown(event) {
+    this.vue.drawing.nodes.push(
+      (this.path = new Line(event.offsetX, event.offsetY))
+    );
+  }
+  mousemove(event) {
+    if (this.path) {
+      this.path.addPoint(event.offsetX, event.offsetY);
+    }
+  }
+  mouseup() {
+    this.path = null;
+  }
+}

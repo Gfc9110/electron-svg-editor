@@ -91,6 +91,18 @@
           </div>
         </div>
       </div>
+      <div id="toolsContainer" class="card">
+        <div class="content">
+          <div
+            class="tool"
+            v-bind:class="{selected: index == currentToolIndex}"
+            v-for="(tool, index) in tools"
+            v-on:click="currentToolIndex = index"
+          >
+            <div class="mt-i">{{tool.icon}}</div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="./js/classes.js"></script>

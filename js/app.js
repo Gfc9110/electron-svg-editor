@@ -10,6 +10,8 @@ var app = new Vue({
         isOpen: false,
         createDocument: { isOpen: false, data: { width: 512, height: 512 } },
       },
+      tools: [new PencilTool(this)],
+      currentToolIndex: -1,
     };
   },
   methods: {
@@ -23,17 +25,13 @@ var app = new Vue({
       window.electron.maximize();
     },
     svgMouseDown(event) {
-      this.drawing.nodes.push(
-        (actualDrawing = new Line(event.offsetX, event.offsetY))
-      );
+      this.tools[this.currentToolIndex]?.mousedown(event);
     },
     svgMouseMove(event) {
-      if (actualDrawing) {
-        actualDrawing.addPoint(event.offsetX, event.offsetY);
-      }
+      this.tools[this.currentToolIndex]?.mousemove(event);
     },
     svgMouseUp(event) {
-      actualDrawing = null;
+      this.tools[this.currentToolIndex]?.mouseup(event);
     },
     showCreateDocument() {
       this.modals.isOpen = true;
@@ -50,7 +48,7 @@ var app = new Vue({
       } else if (event.deltaY > 0) {
         this.view.scale /= 1.1;
       }
-      this.view.scale = Math.min(5, Math.max(0.1, this.view.scale));
+      this.view.scale = Math.min(9, Math.max(0.1, this.view.scale));
     },
     resetZoom() {
       this.view.scale = 1;

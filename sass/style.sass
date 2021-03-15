@@ -4,6 +4,14 @@
   font-weight: 400
   src: url(./material-icons.woff2) format("woff2")
 
+@mixin flex-center
+  display: flex
+  justify-content: center
+  align-items: center
+
+*
+  box-sizing: border-box
+
 .mt-i
   font-family: "Material Icons"
   font-weight: normal
@@ -160,3 +168,23 @@ body
     transition: transform 0.5s ease-in-out
     &:not(.open)
       transform: translateY(100vh) scale(0.001)
+
+#toolsContainer
+  position: absolute
+  left: 20px
+  top: 20px
+  .content
+    padding: 4px
+    .tool
+      border-radius: 4px
+      margin-bottom: 4px
+      height: 32px
+      width: 32px
+      cursor: pointer
+      @include flex-center
+      &:last-child
+        margin-bottom: 0
+      &:hover
+        background-color: #0004
+      &.selected
+        border: 2px dashed red
