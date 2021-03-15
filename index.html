@@ -11,23 +11,38 @@
   <body>
     <div id="app">
       <div class="window-bar">
-        <div class="bar-button action-button" v-on:click="createDocument">
+        <div class="bar-button action-button" v-on:click="showCreateDocument">
           <div class="mt-i">note_add</div>
+        </div>
+        <div class="bar-button action-button" v-on:click="saveSVG">
+          <div class="mt-i">save</div>
+        </div>
+        <div class="divider"></div>
+        <div class="bar-button" v-on:click="resetZoom">
+          {{Math.round(view.scale * 100) + '%'}}
         </div>
         <div class="bar-button" v-on:click="minimize">
           <div class="mt-i">minimize</div>
         </div>
-        <div class="bar-button"><div class="mt-i">maximize</div></div>
+        <div class="bar-button" v-on:click="maximize">
+          <div class="mt-i">maximize</div>
+        </div>
         <div class="bar-button" v-on:click="closeApp">
           <div class="mt-i">close</div>
         </div>
       </div>
-      <div id="svgContainer">
+      <div id="svgContainer" v-on:wheel="editorZoom">
         <svg
           id="svgCanvas"
+          xmlns="http://www.w3.org/2000/svg"
           v-on:mousedown="svgMouseDown"
           v-on:mousemove="svgMouseMove"
           v-on:mouseup="svgMouseUp"
+          v-on:mouseleave="svgMouseUp"
+          v-if="drawing"
+          v-bind:width="drawing.width"
+          v-bind:height="drawing.height"
+          v-bind:style="{transform: 'translate('+view.x+','+view.y+') scale('+view.scale+')'}"
         >
           <path
             v-for="(path, index) in drawing.nodes"
@@ -48,9 +63,32 @@
         >
           <header>
             <div class="title">Nuovo Documento</div>
-            <div class="close-button"><div class="mt-i">close</div></div>
+            <div class="close-button" v-on:click="hideCreateDocument">
+              <div class="mt-i">close</div>
+            </div>
           </header>
-          <div class="content"></div>
+          <div class="content">
+            <div class="sub-title">Dimensioni</div>
+            <div class="input-group">
+              <input
+                type="number"
+                min="10"
+                max="5000"
+                v-model="modals.createDocument.data.width"
+              />
+              <div class="label">px Larghezza</div>
+            </div>
+            <div class="input-group">
+              <input
+                type="number"
+                min="10"
+                max="5000"
+                v-model="modals.createDocument.data.height"
+              />
+              <div class="label">px Altezza</div>
+            </div>
+            <div class="full-button" v-on:click="createDocument">CREA</div>
+          </div>
         </div>
       </div>
     </div>

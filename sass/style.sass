@@ -43,6 +43,7 @@ body
     border-radius: 6px 6px 0 0
     color: black
     font-size: 20px
+    font-weight: bold
     color: white
     height: 36px
     padding-left: 0.5rem
@@ -61,9 +62,32 @@ body
       background-color: #ac2525
       border-radius: 0 6px 0 0
       cursor: pointer
-
   .content
+    color: black
     padding: 1rem
+    .sub-title
+      font-size: 18px
+      font-weight: bold
+      margin-bottom: 6px
+    .input-group
+      display: flex
+      margin-bottom: 4px
+      input
+        width: 50%
+        margin-right: 4px
+        &[type='number']
+          width: 25%
+    .full-button
+      background-color: #2f71ff
+      padding: 0.3rem
+      text-align: center
+      color: white
+      cursor: pointer
+      &:hover
+        background-color: #558bff
+      &:last-child
+        margin-top: 1rem
+
 .window-bar
   color: black
   position: fixed
@@ -75,6 +99,13 @@ body
   display: flex
   justify-content: flex-end
   -webkit-app-region: drag
+  .divider
+    flex-grow: 1
+  .info
+    width: 48px
+    display: flex
+    align-items: center
+    justify-content: center
   .bar-button
     width: 48px
     border-left: 1px solid #bbb
@@ -90,8 +121,6 @@ body
       border-right: 1px solid #bbb
       &:hover
         background-color: #4343ff
-      + .bar-button:not(.action-button)
-        margin-left: auto
     &:hover
       background-color: #999
     &:last-child
@@ -104,12 +133,14 @@ body
   left: 0
   right: 0
   bottom: 0
+  display: flex
+  align-items: center
+  justify-content: center
+  background-color: #222
+  overflow: hidden
   #svgCanvas
     position: absolute
-    top: 0
-    left: 0
-    height: 100%
-    width: 100%
+    background-color: white
 
 #modalsContainer
   position: absolute
@@ -121,9 +152,11 @@ body
   align-items: center
   justify-content: center
   transition: background-color 0.5s
+  pointer-events: none
   &.open
+    pointer-events: auto
     background-color: #0005
   .modal
-    transition: transform 0.5s
+    transition: transform 0.5s ease-in-out
     &:not(.open)
       transform: translateY(100vh) scale(0.001)

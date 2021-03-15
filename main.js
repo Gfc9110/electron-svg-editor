@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
+const fs = require("fs");
 
 require("electron-reload")(__dirname);
 
@@ -22,6 +23,22 @@ function createWindow() {
 
   ipcMain.on("minimizeApp", () => {
     mainWindow.minimize();
+  });
+
+  ipcMain.on("maximizeApp", () => {
+    mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
+  });
+
+  ipcMain.on("saveSVG", (_, svgText) => {
+    dialog
+      .showSaveDialog(mainWindow, {
+        filters: [{ name: "SVG", extensions: ["svg"] }],
+      })
+      .then((result) => {
+        if (!result.canceled) {
+          fs.writeFile(result.filePath, svgText, {}, console.log);
+        }
+      });
   });
 }
 
