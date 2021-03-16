@@ -73,6 +73,8 @@ var app = new Vue({
     },
     resetZoom() {
       this.view.scale = 1;
+      this.view.x = 0;
+      this.view.y = 0;
     },
     editorMouseDown(event) {
       this.movingSVG = event.button == 1;
