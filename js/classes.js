@@ -5,13 +5,24 @@ class Point {
   }
 }
 
-class Line {
+class Path {
   constructor(startX, startY) {
-    this.type = "line";
+    this.type = "path";
     this.points = [new Point(startX, startY)];
   }
   addPoint(x, y) {
     this.points.push(new Point(x, y));
+  }
+}
+
+class Line {
+  constructor(startX, startY) {
+    this.type = "line";
+    this.a = new Point(startX, startY);
+    this.b = new Point(startX, startY);
+  }
+  setB(x, y) {
+    this.b = new Point(x, y);
   }
 }
 
@@ -23,7 +34,7 @@ class PencilTool {
   }
   mousedown(event) {
     this.vue.drawing.nodes.push(
-      (this.path = new Line(event.offsetX, event.offsetY))
+      (this.path = new Path(event.offsetX, event.offsetY))
     );
   }
   mousemove(event) {
@@ -33,5 +44,26 @@ class PencilTool {
   }
   mouseup() {
     this.path = null;
+  }
+}
+
+class LineTool {
+  constructor(vue) {
+    this.vue = vue;
+    this.line = null;
+    this.icon = "open_in_full";
+  }
+  mousedown(event) {
+    this.vue.drawing.nodes.push(
+      (this.line = new Line(event.offsetX, event.offsetY))
+    );
+  }
+  mousemove(event) {
+    if (this.line) {
+      this.line.setB(event.offsetX, event.offsetY);
+    }
+  }
+  mouseup() {
+    this.line = null;
   }
 }

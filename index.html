@@ -45,7 +45,7 @@
           v-bind:style="{transform: 'translate('+view.x+','+view.y+') scale('+view.scale+')'}"
         >
           <path
-            v-for="(path, index) in drawing.nodes"
+            v-for="(path, index) in drawing.nodes.filter(p => p.type=='path' && p.points.length > 1)"
             :key="index"
             v-bind:d="path.points.map((p,i) => {
               return (i==0 ? 'M'+p.x+' '+p.y : 'L'+p.x+' '+p.y)
@@ -53,6 +53,15 @@
             stroke="black"
             fill="none"
           ></path>
+          <line
+            v-for="(line, index) in drawing.nodes.filter(l => l.type=='line' && l.a && l.b)"
+            :key="index"
+            stroke="black"
+            v-bind:x1="line.a.x"
+            v-bind:y1="line.a.y"
+            v-bind:x2="line.b.x"
+            v-bind:y2="line.b.y"
+          ></line>
         </svg>
       </div>
       <div id="modalsContainer" v-bind:class="{open: modals.isOpen}">

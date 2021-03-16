@@ -4,13 +4,17 @@ var app = new Vue({
   el: "#app",
   data() {
     return {
-      drawing: { width: 500, height: 500, nodes: [] },
+      drawing: {
+        width: 500,
+        height: 500,
+        nodes: [],
+      },
       view: { x: 0, y: 0, scale: 1 },
       modals: {
         isOpen: false,
         createDocument: { isOpen: false, data: { width: 512, height: 512 } },
       },
-      tools: [new PencilTool(this)],
+      tools: [new PencilTool(this), new LineTool(this)],
       currentToolIndex: -1,
     };
   },
