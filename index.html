@@ -42,6 +42,7 @@
           v-if="drawing"
           v-bind:width="drawing.width"
           v-bind:height="drawing.height"
+          v-bind:viewBox="'0 0 '+drawing.width+' '+drawing.height"
           v-bind:style="{transform: 'translate('+view.x+','+view.y+') scale('+view.scale+')'}"
         >
           <path
