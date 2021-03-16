@@ -46,7 +46,7 @@ var app = new Vue({
       this.modals.isOpen = false;
       this.modals.createDocument.isOpen = false;
     },
-    editorZoom(event) {
+    editorMouseWheel(event) {
       if (event.deltaY < 0) {
         this.view.scale *= 1.1;
       } else if (event.deltaY > 0) {
@@ -56,6 +56,18 @@ var app = new Vue({
     },
     resetZoom() {
       this.view.scale = 1;
+    },
+    editorMouseDown(event) {
+      this.movingSVG = event.button == 1;
+    },
+    editorMouseMove(event) {
+      if (this.movingSVG) {
+        this.view.x += event.movementX;
+        this.view.y += event.movementY;
+      }
+    },
+    editorMouseUp() {
+      this.movingSVG = false;
     },
     createDocument() {
       this.drawing = {

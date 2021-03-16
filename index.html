@@ -31,7 +31,13 @@
           <div class="mt-i">close</div>
         </div>
       </div>
-      <div id="svgContainer" v-on:wheel="editorZoom">
+      <div
+        id="svgContainer"
+        v-on:wheel="editorMouseWheel"
+        v-on:mousemove="editorMouseMove"
+        v-on:mousedown="editorMouseDown"
+        v-on:mouseup="editorMouseUp"
+      >
         <svg
           id="svgCanvas"
           xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +49,7 @@
           v-bind:width="drawing.width"
           v-bind:height="drawing.height"
           v-bind:viewBox="'0 0 '+drawing.width+' '+drawing.height"
-          v-bind:style="{transform: 'translate('+view.x+','+view.y+') scale('+view.scale+')'}"
+          v-bind:style="{transform: 'translate('+view.x+'px,'+view.y+'px) scale('+view.scale+')'}"
         >
           <path
             v-for="(path, index) in drawing.nodes.filter(p => p.type=='path' && p.points.length > 1)"
