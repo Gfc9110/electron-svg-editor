@@ -13,6 +13,7 @@ var app = new Vue({
       },
       view: { x: 0, y: 0, scale: 1 },
       lastMouse: { x: 0, y: 0 },
+      lastSvgMouse: { x: 0, y: 0 },
       modals: {
         isOpen: false,
         createDocument: { isOpen: false, data: { width: 512, height: 512 } },
@@ -36,12 +37,12 @@ var app = new Vue({
         this.tools[this.currentToolIndex]?.mousedown(event);
     },
     svgMouseMove(event) {
+      this.lastSvgMouse.x = event.offsetX;
+      this.lastSvgMouse.y = event.offsetY;
       if (event.button == 0)
         this.tools[this.currentToolIndex]?.mousemove(event);
     },
-    svgMouseUp(event) {
-      if (event.button == 0) this.tools[this.currentToolIndex]?.mouseup(event);
-    },
+    svgMouseUp(event) {},
     showCreateDocument() {
       this.modals.isOpen = true;
       this.modals.createDocument.isOpen = true;
@@ -92,6 +93,7 @@ var app = new Vue({
     },
     windowMouseUp() {
       this.movingSVG = false;
+      if (event.button == 0) this.tools[this.currentToolIndex]?.mouseup(event);
     },
     createDocument() {
       this.drawing = {

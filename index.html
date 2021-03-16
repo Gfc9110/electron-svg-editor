@@ -18,6 +18,7 @@
           <div class="mt-i">save</div>
         </div>
         <div class="divider"></div>
+        <div class="bar-button coords">{{this.lastSvgMouse.x +","+this.lastSvgMouse.y}}</div>
         <div class="bar-button" v-on:click="resetZoom">
           {{Math.round(view.scale * 100) + '%'}}
         </div>
