@@ -52,18 +52,16 @@ var app = new Vue({
     },
     editorMouseWheel(event) {
       let newScale = this.view.scale;
-      let factor = 1;
       if (event.deltaY < 0) {
         newScale *= 1.1;
-        factor = 1.1;
       } else if (event.deltaY > 0) {
         newScale /= 1.1;
-        factor = 1 / 1.1;
       }
 
       newScale = Math.max(0.1, Math.min(9, newScale));
 
       if (newScale != this.view.scale && newScale <= 9 && newScale >= 0.1) {
+        let factor = newScale / this.view.scale;
         this.view.scale = newScale;
         let mouseOffsetX =
           this.lastMouse.x - window.innerWidth / 2 - this.view.x;
@@ -101,6 +99,9 @@ var app = new Vue({
       };
       this.modals.isOpen = false;
       this.modals.createDocument.isOpen = false;
+      this.view.scale = 1;
+      this.view.x = 0;
+      this.view.y = 0;
     },
     saveSVG() {
       window.electron.saveSVG(svgContainer.innerHTML);
