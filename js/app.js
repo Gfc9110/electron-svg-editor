@@ -18,7 +18,7 @@ var app = new Vue({
         isOpen: false,
         createDocument: { isOpen: false, data: { width: 512, height: 512 } },
       },
-      tools: [new PencilTool(this), new LineTool(this)],
+      tools: [new PencilTool(this), new LineTool(this), new CircleTool(this)],
       currentToolIndex: -1,
     };
   },
@@ -108,7 +108,9 @@ var app = new Vue({
       this.view.y = 0;
     },
     saveSVG() {
-      window.electron.saveSVG(svgContainer.innerHTML);
+      window.electron.saveSVG(
+        document.querySelector("#svgContainer").innerHTML
+      );
     },
   },
   created() {

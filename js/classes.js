@@ -3,6 +3,12 @@ class Point {
     this.x = x;
     this.y = y;
   }
+  distanceSq(point = new Point(0, 0)) {
+    return (this.x - point.x) ** 2 + (this.y - point.y) ** 2;
+  }
+  distance(point = new Point(0, 0)) {
+    return Math.sqrt(this.distanceSq(point));
+  }
 }
 
 class Path {
@@ -12,6 +18,18 @@ class Path {
   }
   addPoint(x, y) {
     this.points.push(new Point(x, y));
+  }
+}
+
+class Circle {
+  constructor(center = Point(0, 0), options) {
+    this.center = center;
+    this.radius = 0;
+    this.type = "circle";
+    this.options = options;
+  }
+  setRadius(radius = 0) {
+    this.radius = radius;
   }
 }
 
@@ -65,5 +83,33 @@ class LineTool {
   }
   mouseup() {
     this.line = null;
+  }
+}
+
+class CircleTool {
+  constructor(vue) {
+    this.vue = vue;
+    this.center = null;
+    this.radius = 0;
+    this.icon = "panorama_fish_eye";
+    this.drawing = false;
+    this.options = { strokeWidth_number: 1, stroke_text: "black" };
+  }
+  mousedown(event) {
+    this.vue.drawing.nodes.push(
+      (this.circle = new Circle(new Point(event.offsetX, event.offsetY), {
+        ...this.options,
+      }))
+    );
+    this.drawing = true;
+  }
+  mousemove(event) {
+    if (this.drawing)
+      this.circle.setRadius(
+        this.circle.center.distance(new Point(event.offsetX, event.offsetY))
+      );
+  }
+  mouseup() {
+    this.drawing = false;
   }
 }

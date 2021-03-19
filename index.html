@@ -18,7 +18,9 @@
           <div class="mt-i">save</div>
         </div>
         <div class="divider"></div>
-        <div class="bar-button coords">{{this.lastSvgMouse.x +","+this.lastSvgMouse.y}}</div>
+        <div class="bar-button coords">
+          {{this.lastSvgMouse.x +","+this.lastSvgMouse.y}}
+        </div>
         <div class="bar-button" v-on:click="resetZoom">
           {{Math.round(view.scale * 100) + '%'}}
         </div>
@@ -70,6 +72,17 @@
             v-bind:x2="line.b.x"
             v-bind:y2="line.b.y"
           ></line>
+          <circle
+            v-for="(circle, index) in drawing.nodes.filter(c => c.type=='circle' && c.center && c.radius)"
+            :key="index"
+            stroke="black"
+            v-bind:stroke-width="circle.options.strokeWidth_number"
+            v-bind:stroke="circle.options.stroke_text"
+            fill="none"
+            v-bind:cx="circle.center.x"
+            v-bind:cy="circle.center.y"
+            v-bind:r="circle.radius"
+          ></circle>
         </svg>
       </div>
       <div id="modalsContainer" v-bind:class="{open: modals.isOpen}">
@@ -117,6 +130,25 @@
             v-on:click="currentToolIndex = index"
           >
             <div class="mt-i">{{tool.icon}}</div>
+          </div>
+        </div>
+      </div>
+      <div
+        id="toolOptionsContainer"
+        class="card"
+        v-if="tools[currentToolIndex]?.options"
+      >
+        <div class="content">
+          <div
+            class="option"
+            v-for="(option, key) in tools[currentToolIndex].options"
+          >
+            <label for="">{{key.split('_')[0]}}</label>
+            <input
+              v-bind:type="key.split('_')[1]"
+              v-model="tools[currentToolIndex].options[key]"
+              min="0"
+            />
           </div>
         </div>
       </div>
