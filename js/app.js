@@ -20,6 +20,10 @@ var app = new Vue({
       },
       tools: [new PencilTool(this), new LineTool(this), new CircleTool(this)],
       currentToolIndex: -1,
+      globalOptions: {
+        "stroke-width": new NumberOption(),
+        stroke: new ColorOption(),
+      },
     };
   },
   methods: {
@@ -111,6 +115,9 @@ var app = new Vue({
       window.electron.saveSVG(
         document.querySelector("#svgContainer").innerHTML
       );
+    },
+    t(key) {
+      return Translator.translate(key);
     },
   },
   created() {

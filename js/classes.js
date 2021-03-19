@@ -1,3 +1,5 @@
+//Nodes
+
 class Point {
   constructor(x, y) {
     this.x = x;
@@ -9,15 +11,20 @@ class Point {
   distance(point = new Point(0, 0)) {
     return Math.sqrt(this.distanceSq(point));
   }
+  set(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 }
 
 class Path {
-  constructor(startX, startY) {
+  constructor(start = new Point(0, 0), options) {
     this.type = "path";
-    this.points = [new Point(startX, startY)];
+    this.points = [new Point(start.x, start.y)];
+    this.options = options;
   }
-  addPoint(x, y) {
-    this.points.push(new Point(x, y));
+  addPoint(point = new Point(0, 0)) {
+    this.points.push(new Point(point.x, point.y));
   }
 }
 
@@ -34,30 +41,36 @@ class Circle {
 }
 
 class Line {
-  constructor(startX, startY) {
+  constructor(start = new Point(0, 0), options) {
     this.type = "line";
-    this.a = new Point(startX, startY);
-    this.b = new Point(startX, startY);
+    this.a = new Point(start.x, start.y);
+    this.b = new Point(start.x, start.y);
+    this.options = options;
   }
-  setB(x, y) {
-    this.b = new Point(x, y);
+  setB(point = new Point(0, 0)) {
+    this.b.set(point.x, point.y);
   }
 }
 
+//Tools
 class PencilTool {
   constructor(vue) {
     this.vue = vue;
     this.path = null;
     this.icon = "edit";
+    this.options = {};
   }
   mousedown(event) {
     this.vue.drawing.nodes.push(
-      (this.path = new Path(event.offsetX, event.offsetY))
+      (this.path = new Path(
+        new Point(event.offsetX, event.offsetY),
+        prepareOptions(this.vue, this.options)
+      ))
     );
   }
   mousemove(event) {
     if (this.path) {
-      this.path.addPoint(event.offsetX, event.offsetY);
+      this.path.addPoint(new Point(event.offsetX, event.offsetY));
     }
   }
   mouseup() {
@@ -70,15 +83,19 @@ class LineTool {
     this.vue = vue;
     this.line = null;
     this.icon = "open_in_full";
+    this.options = {};
   }
   mousedown(event) {
     this.vue.drawing.nodes.push(
-      (this.line = new Line(event.offsetX, event.offsetY))
+      (this.line = new Line(
+        new Point(event.offsetX, event.offsetY),
+        prepareOptions(this.vue, this.options)
+      ))
     );
   }
   mousemove(event) {
     if (this.line) {
-      this.line.setB(event.offsetX, event.offsetY);
+      this.line.setB(new Point(event.offsetX, event.offsetY));
     }
   }
   mouseup() {
@@ -93,13 +110,14 @@ class CircleTool {
     this.radius = 0;
     this.icon = "panorama_fish_eye";
     this.drawing = false;
-    this.options = { strokeWidth_number: 1, stroke_text: "black" };
+    this.options = {};
   }
   mousedown(event) {
     this.vue.drawing.nodes.push(
-      (this.circle = new Circle(new Point(event.offsetX, event.offsetY), {
-        ...this.options,
-      }))
+      (this.circle = new Circle(
+        new Point(event.offsetX, event.offsetY),
+        prepareOptions(this.vue)
+      ))
     );
     this.drawing = true;
   }
@@ -111,5 +129,32 @@ class CircleTool {
   }
   mouseup() {
     this.drawing = false;
+  }
+}
+
+function prepareOptions(vue, toolOptions = {}) {
+  let options = {};
+  Object.keys({ ...vue.globalOptions, ...toolOptions }).forEach((k) => {
+    options[k] = vue.globalOptions[k].value;
+  });
+  return options;
+}
+
+//Options Types
+
+class NumberOption {
+  constructor(defaultValue = 1, min = 0, max = 1000, step = 1) {
+    this.defaultValue = this.value = defaultValue;
+    this.min = min;
+    this.max = max;
+    this.step = step;
+    this.type = "number";
+  }
+}
+
+class ColorOption {
+  constructor(defaultValue = "#000000") {
+    this.defaultValue = this.value = defaultValue;
+    this.type = "color";
   }
 }
