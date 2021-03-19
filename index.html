@@ -56,33 +56,32 @@
           v-bind:viewBox="'0 0 '+drawing.width+' '+drawing.height"
           v-bind:style="{transform: 'translate('+view.x+'px,'+view.y+'px) scale('+view.scale+')'}"
         >
-          <path
-            v-for="(path, index) in drawing.nodes.filter(p => p.type=='path' && p.points.length > 1)"
-            :key="index"
-            v-bind:d="path.points.map((p,i) => {
-              return (i==0 ? 'M'+p.x+' '+p.y : 'L'+p.x+' '+p.y)
-            }).join('')"
-            v-bind="path.options"
-            fill="none"
-          ></path>
-          <line
-            v-for="(line, index) in drawing.nodes.filter(l => l.type=='line' && l.a && l.b)"
-            :key="index"
-            v-bind="line.options"
-            v-bind:x1="line.a.x"
-            v-bind:y1="line.a.y"
-            v-bind:x2="line.b.x"
-            v-bind:y2="line.b.y"
-          ></line>
-          <circle
-            v-for="(circle, index) in drawing.nodes.filter(c => c.type=='circle' && c.center && c.radius)"
-            :key="index"
-            v-bind="circle.options"
-            fill="none"
-            v-bind:cx="circle.center.x"
-            v-bind:cy="circle.center.y"
-            v-bind:r="circle.radius"
-          ></circle>
+          <template v-for="node in drawing.nodes">
+            <path
+              v-if="node.type == 'path' && node.points.length > 1"
+              v-bind:d="node.points.map((p,i) => {
+                return (i==0 ? 'M'+p.x+' '+p.y : 'L'+p.x+' '+p.y)
+              }).join('')"
+              v-bind="node.options"
+              fill="none"
+            ></path>
+            <line
+              v-else-if="node.type == 'line' && node.a && node.b"
+              v-bind="node.options"
+              v-bind:x1="node.a.x"
+              v-bind:y1="node.a.y"
+              v-bind:x2="node.b.x"
+              v-bind:y2="node.b.y"
+            ></line>
+            <circle
+              v-else-if="node.type == 'circle' && node.center && node.radius"
+              v-bind="node.options"
+              fill="none"
+              v-bind:cx="node.center.x"
+              v-bind:cy="node.center.y"
+              v-bind:r="node.radius"
+            ></circle>
+          </template>
         </svg>
       </div>
       <div id="modalsContainer" v-bind:class="{open: modals.isOpen}">
@@ -137,7 +136,7 @@
         <div class="content">
           <div class="option" v-for="(option, key) in globalOptions">
             <label>{{t("options."+key)}}</label>
-            <input v-bind="option" v-model:value="option.value">
+            <input v-bind="option" v-model:value="option.value" />
           </div>
           <div
             class="option"
