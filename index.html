@@ -14,43 +14,43 @@
   <body>
     <div id="app">
       <div class="window-bar">
-        <div class="bar-button action-button" v-on:click="showCreateDocument">
+        <div class="bar-button action-button" @click="showCreateDocument">
           <div class="mt-i">note_add</div>
         </div>
-        <div class="bar-button action-button" v-on:click="saveSVG">
+        <div class="bar-button action-button" @click="saveSVG">
           <div class="mt-i">save</div>
         </div>
         <div class="divider"></div>
         <div class="bar-button coords">
           {{this.lastSvgMouse.x +","+this.lastSvgMouse.y}}
         </div>
-        <div class="bar-button" v-on:click="resetZoom">
+        <div class="bar-button" @click="resetZoom">
           {{Math.round(view.scale * 100) + '%'}}
         </div>
-        <div class="bar-button" v-on:click="minimize">
+        <div class="bar-button" @click="minimize">
           <div class="mt-i">minimize</div>
         </div>
-        <div class="bar-button" v-on:click="maximize">
+        <div class="bar-button" @click="maximize">
           <div class="mt-i">maximize</div>
         </div>
-        <div class="bar-button" v-on:click="closeApp">
+        <div class="bar-button" @click="closeApp">
           <div class="mt-i">close</div>
         </div>
       </div>
       <div
         id="svgContainer"
-        v-on:wheel="editorMouseWheel"
-        v-on:mousemove="editorMouseMove"
-        v-on:mousedown="editorMouseDown"
-        v-on:mouseup="editorMouseUp"
+        @wheel="editorMouseWheel"
+        @mousemove="editorMouseMove"
+        @mousedown="editorMouseDown"
+        @mouseup="editorMouseUp"
       >
         <svg
           id="svgCanvas"
           xmlns="http://www.w3.org/2000/svg"
-          v-on:mousedown="svgMouseDown"
-          v-on:mousemove="svgMouseMove"
-          v-on:mouseup="svgMouseUp"
-          v-on:mouseleave="svgMouseUp"
+          @mousedown="svgMouseDown"
+          @mousemove="svgMouseMove"
+          @mouseup="svgMouseUp"
+          @mouseleave="svgMouseUp"
           v-if="drawing"
           v-bind:width="drawing.width"
           v-bind:height="drawing.height"
@@ -66,13 +66,13 @@
               v-bind:d="node.points.map((p,i) => {
                 return (i==0 ? 'M'+p.x+' '+p.y : 'L'+p.x+' '+p.y)
               }).join('')"
-              v-bind="node.options"
+              v-bind="node.attributes"
               fill="none"
               v-bind:data-index="index"
             ></path>
             <line
               v-else-if="node.type == 'line' && node.a && node.b"
-              v-bind="node.options"
+              v-bind="node.attributes"
               v-bind:x1="node.a.x"
               v-bind:y1="node.a.y"
               v-bind:x2="node.b.x"
@@ -81,7 +81,7 @@
             ></line>
             <circle
               v-else-if="node.type == 'circle' && node.center && node.radius"
-              v-bind="node.options"
+              v-bind="node.attributes"
               fill="none"
               v-bind:cx="node.center.x"
               v-bind:cy="node.center.y"
@@ -94,7 +94,7 @@
               v-bind:y="node.firstPoint.y"
               v-bind:width="node.width"
               v-bind:height="node.height"
-              v-bind="node.options"
+              v-bind="node.attributes"
               fill="none"
               v-bind:data-index="index"
             ></rect>
@@ -110,7 +110,7 @@
         >
           <header>
             <div class="title">Nuovo Documento</div>
-            <div class="close-button" v-on:click="hideCreateDocument">
+            <div class="close-button" @click="hideCreateDocument">
               <div class="mt-i">close</div>
             </div>
           </header>
@@ -134,7 +134,7 @@
               />
               <div class="label">px Altezza</div>
             </div>
-            <div class="full-button" v-on:click="createDocument">CREA</div>
+            <div class="full-button" @click="createDocument">CREA</div>
           </div>
         </div>
       </div>
@@ -144,7 +144,7 @@
             class="tool"
             v-bind:class="{selected: index == currentToolIndex}"
             v-for="(tool, index) in tools"
-            v-on:click="selectTool(index)"
+            @click="selectTool(index)"
           >
             <div class="mt-i">{{tool.icon}}</div>
           </div>
@@ -152,10 +152,29 @@
       </div>
       <div id="toolOptionsContainer" class="card">
         <div class="content">
-          <div class="option" v-for="(option, key) in globalOptions">
-            <label>{{t("options."+key)}}</label>
-            <input v-bind="option" v-model:value="option.value" />
-          </div>
+          <template v-for="(option, key, index) in globalOptions">
+            <div class="title" v-if="index==0">{{t("options-container.title")}}</div>
+            <div class="option">
+              <label>{{t("options."+key)}}</label>
+              <input v-bind="option" v-model:value="option.value" />
+            </div>
+          </template>
+          <template
+            v-for="(option, key, index) in drawing.nodes[selectedNodeIndex]?.options"
+          >
+            <div class="title" v-if="index==0">{{t("options-container.object-title")}}</div>
+            <div class="option">
+              <label>{{t("options."+key)}}</label>
+              <input v-bind="option" v-model:value="option.value" />
+            </div>
+            <button
+              class="danger"
+              v-if="index == Object.keys(drawing.nodes[selectedNodeIndex]?.options).length-1"
+              @click="deleteSelectedNode()"
+            >
+            {{t("options-container.delete-object")}}
+            </button>
+          </template>
           <div
             class="option"
             v-for="(option, key) in tools[currentToolIndex]?.options"

@@ -1,4 +1,9 @@
 {
+  "options-container": {
+    "title": "Attributi Globali",
+    "object-title": "Attributi Oggetto Selezionato",
+    "delete-object": "Elimina Oggetto"
+  },
   "options": {
     "stroke-width": "Spessore Traccia",
     "stroke": "Colore Traccia"

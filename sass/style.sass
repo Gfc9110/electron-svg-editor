@@ -197,9 +197,45 @@ body
   position: absolute
   right: 20px
   top: 20px
+  .content
+    display: flex
+    flex-direction: column
+    .title
+      margin-bottom: 8px
+      font-weight: bold
+      text-align: right
+    .option
+      display: flex
+      align-items: center
+      margin-bottom: 6px
+      + .title
+        margin-top: 2px
+        padding-top: 8px
+        border-top: 1px solid black
+      label
+        flex-grow: 1
+      input
+        width: 25%
+      &:last-child
+        margin-bottom: 0
+    button
+      -webkit-appearance: none
+      outline: none
+      border: none
+      text-transform: uppercase
+      font-weight: bold
+      padding: 5px
+      cursor: pointer
+      border-radius: 3px
+      &:hover
+        filter: brightness(.9)
+      &.danger
+        color: white
+        background-color: red
 
 #hoverSelector
-  display: none
+  opacity: 0
+  transition: opacity 0.2s
   background-color: #7777ff20
   position: fixed
   left: 0
@@ -208,5 +244,6 @@ body
   height: 0
   border-radius: 4px
   pointer-events: none
+  border: 2px dashed #333
   &.show
-    display: block
+    opacity: 1

@@ -28,6 +28,13 @@ class Path {
   addPoint(point = new Point(0, 0)) {
     this.points.push(new Point(point.x, point.y));
   }
+  get attributes() {
+    let attributes = {};
+    Object.keys(this.options).forEach((k) => {
+      attributes[k] = this.options[k].value;
+    });
+    return attributes;
+  }
 }
 
 class Circle {
@@ -40,6 +47,13 @@ class Circle {
   setRadius(radius = 0) {
     this.radius = radius;
   }
+  get attributes() {
+    let attributes = {};
+    Object.keys(this.options).forEach((k) => {
+      attributes[k] = this.options[k].value;
+    });
+    return attributes;
+  }
 }
 
 class Line {
@@ -51,6 +65,13 @@ class Line {
   }
   setB(point = new Point(0, 0)) {
     this.b.set(point.x, point.y);
+  }
+  get attributes() {
+    let attributes = {};
+    Object.keys(this.options).forEach((k) => {
+      attributes[k] = this.options[k].value;
+    });
+    return attributes;
   }
 }
 
@@ -75,6 +96,13 @@ class Rectangle {
     this.width = Math.abs(this.b.x - this.a.x);
     this.height = Math.abs(this.b.y - this.a.y);
   }
+  get attributes() {
+    let attributes = {};
+    Object.keys(this.options).forEach((k) => {
+      attributes[k] = this.options[k].value;
+    });
+    return attributes;
+  }
 }
 
 //Tools
@@ -84,15 +112,22 @@ class SelectTool {
     this.vue = vue;
     this.icon = "location_searching";
   }
+  mousedown(event) {
+    if (event.target.dataset.index) {
+      this.vue.selectedNodeIndex = parseInt(event.target.dataset.index);
+    } else {
+      this.vue.selectedNodeIndex = -1;
+    }
+  }
   mousemove(event) {
     if (event.target.dataset.index) {
       const bounds = event.target.getBoundingClientRect();
       $("#hoverSelector")
         .css({
-          top: bounds.top - 5,
-          left: bounds.left - 5,
-          width: bounds.width + 10,
-          height: bounds.height + 10,
+          top: bounds.top - 10,
+          left: bounds.left - 10,
+          width: bounds.width + 20,
+          height: bounds.height + 20,
         })
         .addClass("show");
     } else {
@@ -100,9 +135,9 @@ class SelectTool {
     }
   }
   mouseup() {}
-  mousedown() {}
   deselected() {
     $("#hoverSelector").removeClass("show");
+    this.vue.selectedNodeIndex = -1;
   }
 }
 class PencilTool {
@@ -113,12 +148,16 @@ class PencilTool {
     this.options = {};
   }
   mousedown(event) {
-    this.vue.drawing.nodes.push(
-      (this.path = new Path(
-        new Point(event.offsetX, event.offsetY),
-        prepareOptions(this.vue, this.options)
-      ))
-    );
+    this.vue.selectedNodeIndex =
+      this.vue.drawing.nodes.push(
+        (this.path = new Path(
+          new Point(event.offsetX, event.offsetY),
+          cloneOptions({
+            ...this.vue.globalOptions,
+            ...this.options,
+          })
+        ))
+      ) - 1;
   }
   mousemove(event) {
     if (this.path) {
@@ -139,12 +178,16 @@ class LineTool {
     this.options = {};
   }
   mousedown(event) {
-    this.vue.drawing.nodes.push(
-      (this.line = new Line(
-        new Point(event.offsetX, event.offsetY),
-        prepareOptions(this.vue, this.options)
-      ))
-    );
+    this.vue.selectedNodeIndex =
+      this.vue.drawing.nodes.push(
+        (this.line = new Line(
+          new Point(event.offsetX, event.offsetY),
+          cloneOptions({
+            ...this.vue.globalOptions,
+            ...this.options,
+          })
+        ))
+      ) - 1;
   }
   mousemove(event) {
     if (this.line) {
@@ -165,12 +208,16 @@ class CircleTool {
     this.options = {};
   }
   mousedown(event) {
-    this.vue.drawing.nodes.push(
-      (this.circle = new Circle(
-        new Point(event.offsetX, event.offsetY),
-        prepareOptions(this.vue)
-      ))
-    );
+    this.vue.selectedNodeIndex =
+      this.vue.drawing.nodes.push(
+        (this.circle = new Circle(
+          new Point(event.offsetX, event.offsetY),
+          cloneOptions({
+            ...this.vue.globalOptions,
+            ...this.options,
+          })
+        ))
+      ) - 1;
     this.drawing = true;
   }
   mousemove(event) {
@@ -193,12 +240,16 @@ class RectangleTool {
     this.options = {};
   }
   mousedown(event) {
-    this.vue.drawing.nodes.push(
-      (this.rectangle = new Rectangle(
-        new Point(event.offsetX, event.offsetY),
-        prepareOptions(this.vue)
-      ))
-    );
+    this.vue.selectedNodeIndex =
+      this.vue.drawing.nodes.push(
+        (this.rectangle = new Rectangle(
+          new Point(event.offsetX, event.offsetY),
+          cloneOptions({
+            ...this.vue.globalOptions,
+            ...this.options,
+          })
+        ))
+      ) - 1;
     this.drawing = true;
   }
   mousemove(event) {
@@ -211,14 +262,6 @@ class RectangleTool {
   deselected() {}
 }
 
-function prepareOptions(vue, toolOptions = {}) {
-  let options = {};
-  Object.keys({ ...vue.globalOptions, ...toolOptions }).forEach((k) => {
-    options[k] = vue.globalOptions[k].value;
-  });
-  return options;
-}
-
 //Options Types
 
 class NumberOption {
@@ -229,6 +272,9 @@ class NumberOption {
     this.step = step;
     this.type = "number";
   }
+  clone() {
+    return new NumberOption(this.value, this.min, this.max, this.step);
+  }
 }
 
 class ColorOption {
@@ -236,4 +282,17 @@ class ColorOption {
     this.defaultValue = this.value = defaultValue;
     this.type = "color";
   }
+  clone() {
+    return new ColorOption(this.value);
+  }
+}
+
+//Functions
+
+function cloneOptions(options) {
+  let clonedOptions = {};
+  Object.keys(options).forEach((key) => {
+    clonedOptions[key] = options[key].clone();
+  });
+  return clonedOptions;
 }

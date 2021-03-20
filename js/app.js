@@ -11,6 +11,7 @@ var app = new Vue({
         height: 500,
         nodes: [],
       },
+      selectedNodeIndex: -1,
       view: { x: 0, y: 0, scale: 1 },
       lastMouse: { x: 0, y: 0 },
       lastSvgMouse: { x: 0, y: 0 },
@@ -43,8 +44,9 @@ var app = new Vue({
       window.electron.maximize();
     },
     svgMouseDown(event) {
-      if (event.button == 0)
+      if (event.button == 0) {
         this.tools[this.currentToolIndex]?.mousedown(event);
+      }
     },
     svgMouseMove(event) {
       this.lastSvgMouse.x = event.offsetX;
@@ -128,6 +130,9 @@ var app = new Vue({
     selectTool(index) {
       this.tools[this.currentToolIndex]?.deselected();
       this.currentToolIndex = index;
+    },
+    deleteSelectedNode() {
+      this.drawing.nodes.splice(this.selectedNodeIndex, 1);
     },
   },
   created() {
