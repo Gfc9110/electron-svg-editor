@@ -1,3 +1,5 @@
+const svgSelector = $("#selector");
+
 //Nodes
 
 class Point {
@@ -52,7 +54,57 @@ class Line {
   }
 }
 
+class Rectangle {
+  constructor(start = new Point(0, 0), options) {
+    this.type = "rectangle";
+    this.a = new Point(start.x, start.y);
+    this.b = new Point(start.x, start.y);
+    this.width = 0;
+    this.height = 0;
+    this.options = options;
+  }
+  get firstPoint() {
+    return new Point(
+      Math.min(this.a.x, this.b.x),
+      Math.min(this.a.y, this.b.y)
+    );
+  }
+  setB(point = newPoint(0, 0)) {
+    this.b.x = point.x;
+    this.b.y = point.y;
+    this.width = Math.abs(this.b.x - this.a.x);
+    this.height = Math.abs(this.b.y - this.a.y);
+  }
+}
+
 //Tools
+
+class SelectTool {
+  constructor(vue) {
+    this.vue = vue;
+    this.icon = "location_searching";
+  }
+  mousemove(event) {
+    if (event.target.dataset.index) {
+      const bounds = event.target.getBoundingClientRect();
+      $("#hoverSelector")
+        .css({
+          top: bounds.top - 5,
+          left: bounds.left - 5,
+          width: bounds.width + 10,
+          height: bounds.height + 10,
+        })
+        .addClass("show");
+    } else {
+      $("#hoverSelector").removeClass("show");
+    }
+  }
+  mouseup() {}
+  mousedown() {}
+  deselected() {
+    $("#hoverSelector").removeClass("show");
+  }
+}
 class PencilTool {
   constructor(vue) {
     this.vue = vue;
@@ -76,6 +128,7 @@ class PencilTool {
   mouseup() {
     this.path = null;
   }
+  deselected() {}
 }
 
 class LineTool {
@@ -101,13 +154,12 @@ class LineTool {
   mouseup() {
     this.line = null;
   }
+  deselected() {}
 }
 
 class CircleTool {
   constructor(vue) {
     this.vue = vue;
-    this.center = null;
-    this.radius = 0;
     this.icon = "panorama_fish_eye";
     this.drawing = false;
     this.options = {};
@@ -130,6 +182,33 @@ class CircleTool {
   mouseup() {
     this.drawing = false;
   }
+  deselected() {}
+}
+
+class RectangleTool {
+  constructor(vue) {
+    this.vue = vue;
+    this.icon = "crop_landscape";
+    this.drawing = false;
+    this.options = {};
+  }
+  mousedown(event) {
+    this.vue.drawing.nodes.push(
+      (this.rectangle = new Rectangle(
+        new Point(event.offsetX, event.offsetY),
+        prepareOptions(this.vue)
+      ))
+    );
+    this.drawing = true;
+  }
+  mousemove(event) {
+    if (this.drawing)
+      this.rectangle.setB(new Point(event.offsetX, event.offsetY));
+  }
+  mouseup() {
+    this.drawing = false;
+  }
+  deselected() {}
 }
 
 function prepareOptions(vue, toolOptions = {}) {

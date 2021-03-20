@@ -151,6 +151,8 @@ body
   #svgCanvas
     position: absolute
     background-color: white
+    *
+      pointer-events: bounding-box
 
 #modalsContainer
   position: absolute
@@ -196,3 +198,15 @@ body
   right: 20px
   top: 20px
 
+#hoverSelector
+  display: none
+  background-color: #7777ff20
+  position: fixed
+  left: 0
+  top: 0
+  width: 0
+  height: 0
+  border-radius: 4px
+  pointer-events: none
+  &.show
+    display: block

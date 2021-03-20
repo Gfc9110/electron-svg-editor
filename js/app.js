@@ -18,7 +18,13 @@ var app = new Vue({
         isOpen: false,
         createDocument: { isOpen: false, data: { width: 512, height: 512 } },
       },
-      tools: [new PencilTool(this), new LineTool(this), new CircleTool(this)],
+      tools: [
+        new SelectTool(this),
+        new PencilTool(this),
+        new LineTool(this),
+        new CircleTool(this),
+        new RectangleTool(this),
+      ],
       currentToolIndex: -1,
       globalOptions: {
         "stroke-width": new NumberOption(),
@@ -118,6 +124,10 @@ var app = new Vue({
     },
     t(key) {
       return Translator.translate(key);
+    },
+    selectTool(index) {
+      this.tools[this.currentToolIndex]?.deselected();
+      this.currentToolIndex = index;
     },
   },
   created() {

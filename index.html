@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/vue.js"></script>
     <link rel="stylesheet" href="css/pickr.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="js/pickr.js"></script>
@@ -56,7 +57,10 @@
           v-bind:viewBox="'0 0 '+drawing.width+' '+drawing.height"
           v-bind:style="{transform: 'translate('+view.x+'px,'+view.y+'px) scale('+view.scale+')'}"
         >
-          <template v-for="node in drawing.nodes">
+          <template
+            v-for="(node, index) in drawing.nodes"
+            v-bind:data-index="index"
+          >
             <path
               v-if="node.type == 'path' && node.points.length > 1"
               v-bind:d="node.points.map((p,i) => {
@@ -64,6 +68,7 @@
               }).join('')"
               v-bind="node.options"
               fill="none"
+              v-bind:data-index="index"
             ></path>
             <line
               v-else-if="node.type == 'line' && node.a && node.b"
@@ -72,6 +77,7 @@
               v-bind:y1="node.a.y"
               v-bind:x2="node.b.x"
               v-bind:y2="node.b.y"
+              v-bind:data-index="index"
             ></line>
             <circle
               v-else-if="node.type == 'circle' && node.center && node.radius"
@@ -80,10 +86,22 @@
               v-bind:cx="node.center.x"
               v-bind:cy="node.center.y"
               v-bind:r="node.radius"
+              v-bind:data-index="index"
             ></circle>
+            <rect
+              v-else-if="node.type == 'rectangle' && node.a && node.b"
+              v-bind:x="node.firstPoint.x"
+              v-bind:y="node.firstPoint.y"
+              v-bind:width="node.width"
+              v-bind:height="node.height"
+              v-bind="node.options"
+              fill="none"
+              v-bind:data-index="index"
+            ></rect>
           </template>
         </svg>
       </div>
+      <div id="hoverSelector"></div>
       <div id="modalsContainer" v-bind:class="{open: modals.isOpen}">
         <div
           class="modal card"
@@ -126,7 +144,7 @@
             class="tool"
             v-bind:class="{selected: index == currentToolIndex}"
             v-for="(tool, index) in tools"
-            v-on:click="currentToolIndex = index"
+            v-on:click="selectTool(index)"
           >
             <div class="mt-i">{{tool.icon}}</div>
           </div>
